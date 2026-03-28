@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>FLOR CRESTO BY NUBIA · Salón de Belleza</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- FullCalendar -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/es.min.js'></script>
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <!-- Firebase SDK (modular) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js",
+                "firebase/analytics": "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js"
+            }
+        }
+    </script>
+    <style>
+        /* ========== ESTILOS COMPLETOS (sin cambios) ========== */
+        :root {
+            --primary-black: #0d0d0d;
+            --secondary-black: #1a1a1a;
+            --pink: #ff3b9b;
+            --light-pink: #ff99cc;
+            --dark-pink: #b8005e;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --mp-blue: #009EE3;
+            --shadow-light: 0 2px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.12);
+            --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.15);
+            --border-radius-sm: 6px;
+            --border-radius-md: 10px;
+            --border-radius-lg: 16px;
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--primary-black);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--secondary-black) 100%);
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: var(--shadow-medium);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .logo-img {
+            height: 50px;
+            width: auto;
+            filter: drop-shadow(0 0 10px var(--light-pink));
+            border-radius: 10px;
+            background: rgba(255, 59, 155, 0.1);
+            padding: 5px;
+            object-fit: contain;
+        }
+        
+        .logo span {
+            color: var(--pink);
+            background: linear-gradient(45deg, var(--pink), var(--light-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+        
+        nav {
+            transition: right 0.3s ease;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition-fast);
+        }
+        
+        nav a:hover {
+            color: var(--light-pink);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(13,13,13,0.85), rgba(26,26,26,0.9)), 
+                        url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
+            color: var(--white);
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero-logo {
+            max-width: 80%;
+            height: auto;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 20px var(--pink));
+            border: 3px solid var(--pink);
+            border-radius: 30px;
+            padding: 10px;
+            background: rgba(255,59,155,0.1);
+            object-fit: contain;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: var(--light-pink);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--pink) 0%, var(--dark-pink) 100%);
+            color: var(--primary-black);
+            padding: 0.8rem 1.8rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition-normal);
+            font-size: 1rem;
+            width: auto;
+            min-width: 200px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+            background: linear-gradient(135deg, var(--light-pink) 0%, var(--pink) 100%);
+        }
+        
+        .btn-mp {
+            background: var(--mp-blue);
+            color: white;
+        }
+        .btn-mp:hover {
+            background: #0079b5;
+        }
+        
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+        .btn-whatsapp:hover {
+            background: #128C7E;
+        }
+        
+        .btn-instagram {
+            background: linear-gradient(45deg, #f09433, #d62976, #962fbf, #4f5bd5);
+            color: white;
+        }
+        .btn-instagram:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            min-width: auto;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .services {
+            padding: 4rem 0;
+            background-color: var(--white);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--primary-black);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--pink);
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .service-card {
+            background: var(--white);
+            border-radius: var(--border-radius-md);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow-light);
+            transition: var(--transition-normal);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--pink);
+        }
+        
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--pink);
+            margin-bottom: 1rem;
+        }
+        
+        .service-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .service-card .duracion {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark-pink);
+            background: var(--light-pink);
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 50px;
+        }
+        
+        .service-card .senia {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--mp-blue);
+            font-weight: 600;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem 1.5rem;
+            position: relative;
+            box-shadow: var(--shadow-heavy);
+            border: 1px solid var(--medium-gray);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--dark-gray);
+            transition: var(--transition-fast);
+        }
+        
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--primary-black);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: var(--secondary-black);
+            font-size: 0.95rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+        
+        .admin-panel {
+            display: none;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, var(--light-gray) 0%, var(--white) 100%);
+            min-height: 100vh;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--medium-gray);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .admin-title {
+            font-size: 1.8rem;
+            color: var(--primary-black);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .stat-card {
+            background: var(--light-gray);
+            padding: 1.2rem 1rem;
+            border-radius: var(--border-radius-md);
+            text-align: center;
+            border-left: 4px solid var(--pink);
+        }
+        
+        .stat-card p {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary-black);
+        }
+        
+        .day-hours-container {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .day-card {
+            background: var(--light-gray);
+            border-radius: var(--border-radius-md);
+            padding: 1.2rem;
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .horario-continuo {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .horario-continuo .form-group {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .calendar-section {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--medium-gray);
+            overflow-x: auto;
+        }
+        
+        #calendar {
+            min-height: 500px;
+            height: 60vh;
+            width: 100%;
+        }
+        
+        .fc .fc-toolbar {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .fc .fc-toolbar-title {
+            font-size: 1.2rem;
+        }
+        
+        .fc .fc-button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+        
+        .turno-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--white);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 0.8rem;
+            border-left: 4px solid var(--pink);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .turno-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .turno-estado {
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .estado-pendiente { background: var(--warning); color: #000; }
+        .estado-completado { background: var(--success); color: #fff; }
+        .estado-cancelado { background: var(--danger); color: #fff; }
+        .estado-pagado { background: var(--mp-blue); color: #fff; }
+        
+        .turno-acciones {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .turno-acciones button {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition-fast);
+        }
+        .completar-btn { background: var(--success); color: white; }
+        .cancelar-btn { background: var(--danger); color: white; }
+        .eliminar-btn { background: var(--dark-gray); color: white; }
+        
+        .nota-icon {
+            color: var(--pink);
+            margin-left: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        footer {
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--secondary-black) 100%);
+            color: var(--white);
+            padding: 3rem 0 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-column h3 {
+            color: var(--pink);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            color: var(--white);
+            font-size: 1.5rem;
+            transition: var(--transition-fast);
+        }
+        
+        .social-links a:hover {
+            color: var(--pink);
+        }
+        
+        .location-card {
+            margin-top: 2.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 1.2rem 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            border: 1px solid rgba(255, 59, 155, 0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .location-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+            border-color: var(--pink);
+        }
+
+        .location-icon {
+            background: var(--pink);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: var(--primary-black);
+            box-shadow: 0 4px 10px rgba(255,59,155,0.4);
+        }
+
+        .location-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .location-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: var(--light-pink);
+        }
+
+        .location-info p {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            color: var(--white);
+        }
+
+        .btn-location {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--pink);
+            color: var(--primary-black);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-location:hover {
+            background: var(--light-pink);
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(255,59,155,0.4);
+        }
+
+        @media (max-width: 600px) {
+            .location-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.2rem;
+            }
+            .location-info {
+                text-align: center;
+            }
+            .location-icon {
+                margin-bottom: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                background: linear-gradient(135deg, var(--primary-black) 0%, #34495e 100%);
+                padding: 80px 20px 20px;
+                transition: right 0.3s ease;
+                z-index: 1000;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+            }
+            
+            nav.active {
+                right: 0;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            nav a {
+                padding: 12px;
+                border-radius: var(--border-radius-sm);
+                margin-bottom: 5px;
+                justify-content: flex-start;
+            }
+            
+            .nav-overlay.active {
+                display: block;
+            }
+            
+            .logo span {
+                font-size: 1.2rem;
+            }
+            
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .admin-title {
+                font-size: 1.5rem;
+            }
+            
+            .admin-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .modal-content {
+                padding: 1.5rem;
+            }
+            
+            .turno-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .turno-info {
+                width: 100%;
+            }
+            
+            .turno-acciones {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .btn {
+                min-width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+            
+            .horario-continuo {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <img id="headerLogo" class="logo-img site-logo" src="download.jpg" alt="Logo Flor Cresto" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <span>FLOR CRESTO BY NUBIA</span>
+            </div>
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-overlay" id="navOverlay"></div>
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="#inicio"><i class="fas fa-home"></i> Inicio</a></li>
+                    <li><a href="#servicios"><i class="fas fa-cut"></i> Servicios</a></li>
+                    <li><a href="#" id="adminLink"><i class="fas fa-cog"></i> Administración</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section id="inicio" class="hero">
+        <div class="container hero-content">
+            <img id="heroLogo" class="hero-logo site-logo" src="download.jpg" alt="Logo Flor Cresto" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <p>🌸 transformamos tu cabello con arte, cuidado y resultado que enamoran 🌸</p>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 2rem;">
+                <button class="btn" id="abrirModalReserva"><i class="fas fa-calendar-check"></i> RESERVAR TURNO</button>
+                <a href="https://wa.me/5492614859340" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a href="https://www.instagram.com/florcresto_bynubia" target="_blank" class="btn btn-instagram"><i class="fab fa-instagram"></i> Instagram</a>
+            </div>
+
+            <div class="location-card">
+                <div class="location-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="location-info">
+                    <h3>📍 Nuestra ubicación</h3>
+                    <p>Necochea 1550, Godoy Cruz, Mendoza</p>
+                    <a href="https://maps.app.goo.gl/hgNu6d5H1e9iaQiFA" target="_blank" class="btn-location">
+                        <i class="fas fa-directions"></i> Cómo llegar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICIOS -->
+    <section id="servicios" class="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nuestros Servicios</h2>
+                <p>Duración estimada de cada servicio</p>
+            </div>
+            <div class="services-grid" id="servicesGrid"></div>
+        </div>
+    </section>
+
+    <!-- MODAL LOGIN ADMIN -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="cerrarLoginModal">&times;</span>
+            <h3 class="modal-title">🔐 Acceso Administrador</h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" class="form-control" id="password" placeholder="Ingresa la contraseña" required>
+                </div>
+                <button type="submit" class="btn btn-block">Ingresar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL RESERVA PÚBLICA (con nota) -->
+    <div id="reservaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="cerrarModalReserva">&times;</span>
+            <h3 class="modal-title">🌸 Reserva tu turno</h3>
+            <form id="reservaForm">
+                <div class="form-group">
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" class="form-control" id="nombre" placeholder="Ej: María González" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono (con código de área)</label>
+                    <input type="tel" class="form-control" id="telefono" placeholder="Ej: 5492614859340" required>
+                </div>
+                <div class="form-group">
+                    <label for="servicio">Servicio</label>
+                    <select class="form-control" id="servicio" required>
+                        <option value="">Selecciona un servicio</option>
+                    </select>
+                    <small id="duracionEstimada" style="color: var(--dark-pink);"></small>
+                    <div id="montoSeniaInfo" style="margin-top: 0.5rem; font-weight: bold; color: var(--mp-blue);"></div>
+                </div>
+
+                <!-- Campo nota -->
+                <div class="form-group">
+                    <label for="nota"><i class="fas fa-pencil-alt"></i> Nota (opcional)</label>
+                    <textarea class="form-control" id="nota" rows="2" placeholder="Ej: Prefiero color rojo, tengo alergia, dejar mensaje..."></textarea>
+                </div>
+
+                <div id="mensajeWhatsApp" style="display: none; background: #fff3e0; border-left: 4px solid var(--warning); padding: 1rem; margin: 1rem 0; border-radius: var(--border-radius-md);">
+                    <p><strong>📌 Antes de reservar tu turno de diseño de mechas</strong></p>
+                    <p>Debes contactar a la profesional para recibir un diagnóstico que se adapte a tu cabello y necesidades.</p>
+                    <button type="button" id="btnWhatsAppAsesoramiento" class="btn btn-whatsapp btn-block" style="margin-top: 0.8rem;">
+                        <i class="fab fa-whatsapp"></i> Contactar para diagnóstico
+                    </button>
+                </div>
+
+                <div class="payment-info" style="background: #e8f0fe; border-left-color: var(--info); margin: 1rem 0;">
+                    <h4><i class="fas fa-info-circle"></i> Importante</h4>
+                    <p>✅ El turno queda confirmado únicamente una vez realizada la seña.</p>
+                    <p>⏳ Hasta que no se envía el comprobante, el horario continúa disponible.</p>
+                    <p>💳 Una vez que hagas la reserva, te indicamos los datos para transferir.</p>
+                    <p>✨ ¡Te esperamos para mimarte!</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fecha">Fecha</label>
+                    <input type="text" class="form-control" id="fecha" placeholder="Selecciona una fecha" required>
+                </div>
+                <div class="form-group">
+                    <label for="hora">Hora</label>
+                    <input type="time" class="form-control" id="hora" required>
+                </div>
+                
+                <button type="button" class="btn btn-mp btn-block" id="pagarMercadoPago" style="display: none;">
+                    <i class="fab fa-mercadopago"></i> Pagar seña con Mercado Pago
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL RESERVA ADMIN (con nota) -->
+    <div id="adminReservaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="cerrarAdminReservaModal">&times;</span>
+            <h3 class="modal-title">👑 Agregar turno (Administradora)</h3>
+            <p style="color: var(--dark-pink); margin-bottom: 1rem;"><i class="fas fa-unlock-alt"></i> Modo libre: puedes agregar turnos en cualquier momento, incluso múltiples en el mismo horario.</p>
+            <form id="adminReservaForm">
+                <div class="form-group">
+                    <label for="adminNombre">Nombre completo</label>
+                    <input type="text" class="form-control" id="adminNombre" placeholder="Ej: María González" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminTelefono">Teléfono (con código de área)</label>
+                    <input type="tel" class="form-control" id="adminTelefono" placeholder="Ej: 5492614859340" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminServicio">Servicio</label>
+                    <select class="form-control" id="adminServicio" required>
+                        <option value="">Selecciona un servicio</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="adminNota"><i class="fas fa-pencil-alt"></i> Nota (opcional)</label>
+                    <textarea class="form-control" id="adminNota" rows="2" placeholder="Observaciones, preferencias, etc."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="adminFecha">Fecha</label>
+                    <input type="text" class="form-control" id="adminFecha" placeholder="Selecciona una fecha" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminHora">Hora</label>
+                    <input type="time" class="form-control" id="adminHora" required>
+                </div>
+                <button type="submit" class="btn btn-block" id="btnGuardarAdminReserva">
+                    <span>Agregar turno</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL INFO CLIENTE (con edición de nota) -->
+    <div id="clientInfoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="cerrarInfoModal">&times;</span>
+            <h3 class="modal-title">📋 Detalles del turno</h3>
+            <div id="clientInfoContent"></div>
+            <div id="notaEditableArea" style="margin-top: 1.5rem; border-top: 1px solid var(--medium-gray); padding-top: 1rem;">
+                <label for="editarNota"><strong>📝 Nota del cliente:</strong></label>
+                <textarea id="editarNota" class="form-control" rows="2" placeholder="Sin nota..."></textarea>
+                <button id="guardarNotaBtn" class="btn btn-small" style="margin-top: 0.5rem; background: var(--info); color: white;">Guardar nota</button>
+            </div>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-small btn-whatsapp" id="whatsappBtn"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                <button class="btn btn-small btn-success" id="completarTurnoInfo">✔ Completar</button>
+                <button class="btn btn-small btn-danger" id="cancelarTurnoInfo">✖ Cancelar</button>
+                <button class="btn btn-small btn-danger" id="eliminarTurnoInfo">🗑 Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL ADMIN -->
+    <div id="adminPanel" class="admin-panel">
+        <div class="container">
+            <div class="admin-header">
+                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <img id="logoPreview" src="download.jpg" alt="Logo" style="height: 50px; border: 2px solid var(--pink); border-radius: 10px; padding: 5px;">
+                    <h2 class="admin-title"><i class="fas fa-cog"></i> Panel de Administración</h2>
+                </div>
+                <div class="admin-actions">
+                    <button class="btn btn-success" id="agregarTurnoAdminBtn"><i class="fas fa-plus-circle"></i> Agregar turno manual</button>
+                    <button class="btn btn-secondary" id="cerrarAdmin"><i class="fas fa-times"></i> Cerrar panel</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card"><h4>Turnos Hoy</h4><p id="hoyCount">0</p></div>
+                <div class="stat-card"><h4>Esta Semana</h4><p id="semanaCount">0</p></div>
+                <div class="stat-card"><h4>Completados</h4><p id="completadosCount">0</p></div>
+                <div class="stat-card"><h4>Cancelados</h4><p id="canceladosCount">0</p></div>
+                <div class="stat-card"><h4>Pagados</h4><p id="pagadosCount">0</p></div>
+            </div>
+
+            <div class="calendar-section">
+                <h3><i class="fas fa-calendar-alt"></i> Calendario de turnos (haz clic en una celda para agregar turno como administradora)</h3>
+                <div id="calendar"></div>
+            </div>
+
+            <div class="business-hours-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                    <h3><i class="fas fa-clock"></i> Horarios de atención</h3>
+                    <button class="btn btn-small" id="guardarHorarios"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+                <div class="day-hours-container" id="horariosContainer"></div>
+            </div>
+
+            <div class="business-hours-section">
+                <h3><i class="fas fa-image"></i> Personalizar logo</h3>
+                <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                    <img id="logoUploadPreview" src="download.jpg" alt="Vista previa" style="height: 80px; border: 2px solid var(--pink); border-radius: 10px; padding: 5px;">
+                    <div>
+                        <input type="file" id="logoUpload" accept="image/*">
+                        <p style="font-size: 0.9rem;">Selecciona una nueva imagen para el logo</p>
+                        <button id="guardarLogoBtn" class="btn btn-small" style="margin-top: 8px;">Guardar logo</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="turnos-lista">
+                <h3><i class="fas fa-list"></i> Turnos reservados</h3>
+                <div id="turnosContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>FLOR CRESTO BY NUBIA</h3>
+                    <p>Belleza y estilo con la mejor calidad.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/florcresto_bynubia" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/5492614859340" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Contacto</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> <a href="https://maps.app.goo.gl/hgNu6d5H1e9iaQiFA" target="_blank" style="color: white; text-decoration: none;">Necochea 1550, Godoy Cruz, Mendoza</a></li>
+                        <li><i class="fas fa-phone"></i> +54 9 261 485 9340</li>
+                        <li><i class="fas fa-envelope"></i> info@florcrestobynubia.com</li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Horarios</h3>
+                    <ul>
+                        <li><i class="fas fa-clock"></i> Lunes a Domingo: 9:00 - 19:00</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2026 FLOR CRESTO BY NUBIA</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "firebase/app";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, getDoc } from "firebase/firestore";
+        import { getAnalytics } from "firebase/analytics";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCK9sCxdUghKKg-VvJz3JXg21xPy-4j7PA",
+            authDomain: "florcrestobynubia-9d11c.firebaseapp.com",
+            databaseURL: "https://florcrestobynubia-9d11c-default-rtdb.firebaseio.com",
+            projectId: "florcrestobynubia-9d11c",
+            storageBucket: "florcrestobynubia-9d11c.firebasestorage.app",
+            messagingSenderId: "986427781087",
+            appId: "1:986427781087:web:51518a98367a195f8c9e6a",
+            measurementId: "G-ZPKD9H1FXP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
+
+        const servicios = [
+            { id: 1, nombre: 'Tintura de raíces (1:20h)', duracion: 80, montoSenia: 8000, linkPago: 'https://mpago.li/27QHyBg' },
+            { id: 2, nombre: 'Raíces + nutri + corte (1:50h)', duracion: 110, montoSenia: 8000, linkPago: 'https://mpago.li/27QHyBg' },
+            { id: 3, nombre: 'Babylights/Balayage (4-6h)', duracion: 300, montoSenia: 12000, linkPago: 'https://mpago.li/2qWdFp3' },
+            { id: 4, nombre: 'Corte + nutri + brushing (1:30h)', duracion: 90, montoSenia: 8000, linkPago: 'https://mpago.li/27QHyBg' },
+            { id: 5, nombre: 'Tintura completa + brushing + nutrición (2h)', duracion: 120, montoSenia: 8000, linkPago: 'https://mpago.li/27QHyBg' },
+            { id: 6, nombre: 'Alisado (2-2:30h)', duracion: 135, montoSenia: 8000, linkPago: 'https://mpago.li/27QHyBg' },
+            { id: 7, nombre: 'Tratamiento botox/keratina (1:30-2h)', duracion: 105, montoSenia: 8000, linkPago: 'https://mpago.li/27QHyBg' },
+            { id: 8, nombre: 'Peinado de fiesta (1-1:30h)', duracion: 75, montoSenia: 8000, linkPago: 'https://mpago.li/27QHyBg' }
+        ];
+
+        const ADMIN_PASSWORD = "1234";
+        let isAdmin = false;
+        let turnos = [];
+        let horarios = {};
+        let confirmarPagoBtn = null;
+
+        // Elementos DOM
+        const adminPanel = document.getElementById('adminPanel');
+        const adminLink = document.getElementById('adminLink');
+        const loginModal = document.getElementById('loginModal');
+        const cerrarLoginModal = document.getElementById('cerrarLoginModal');
+        const loginForm = document.getElementById('loginForm');
+        const passwordInput = document.getElementById('password');
+        const abrirModalReserva = document.getElementById('abrirModalReserva');
+        const reservaModal = document.getElementById('reservaModal');
+        const cerrarModalReserva = document.getElementById('cerrarModalReserva');
+        const reservaForm = document.getElementById('reservaForm');
+        const servicioSelect = document.getElementById('servicio');
+        const adminServicioSelect = document.getElementById('adminServicio');
+        const duracionEstimada = document.getElementById('duracionEstimada');
+        const montoSeniaInfo = document.getElementById('montoSeniaInfo');
+        const mensajeWhatsAppDiv = document.getElementById('mensajeWhatsApp');
+        const btnWhatsAppAsesoramiento = document.getElementById('btnWhatsAppAsesoramiento');
+        const turnosContainer = document.getElementById('turnosContainer');
+        const horariosContainer = document.getElementById('horariosContainer');
+        const guardarHorariosBtn = document.getElementById('guardarHorarios');
+        const clientInfoModal = document.getElementById('clientInfoModal');
+        const cerrarInfoModal = document.getElementById('cerrarInfoModal');
+        const clientInfoContent = document.getElementById('clientInfoContent');
+        const completarTurnoInfo = document.getElementById('completarTurnoInfo');
+        const cancelarTurnoInfo = document.getElementById('cancelarTurnoInfo');
+        const whatsappBtn = document.getElementById('whatsappBtn');
+        const adminReservaModal = document.getElementById('adminReservaModal');
+        const cerrarAdminReservaModal = document.getElementById('cerrarAdminReservaModal');
+        const adminReservaForm = document.getElementById('adminReservaForm');
+        const agregarTurnoAdminBtn = document.getElementById('agregarTurnoAdminBtn');
+        const fechaInput = document.getElementById('fecha');
+        const adminFechaInput = document.getElementById('adminFecha');
+        const adminHoraInput = document.getElementById('adminHora');
+        const btnGuardarAdminReserva = document.getElementById('btnGuardarAdminReserva');
+        const eliminarTurnoInfo = document.getElementById('eliminarTurnoInfo');
+        const pagarMercadoPago = document.getElementById('pagarMercadoPago');
+        const notaInput = document.getElementById('nota');
+        const adminNotaInput = document.getElementById('adminNota');
+        const editarNota = document.getElementById('editarNota');
+        const guardarNotaBtn = document.getElementById('guardarNotaBtn');
+        const logoUpload = document.getElementById('logoUpload');
+        const guardarLogoBtn = document.getElementById('guardarLogoBtn');
+        const logoUploadPreview = document.getElementById('logoUploadPreview');
+        const headerLogo = document.getElementById('headerLogo');
+        const heroLogo = document.getElementById('heroLogo');
+        const logoPreview = document.getElementById('logoPreview');
+
+        const menuToggle = document.getElementById('menuToggle');
+        const mainNav = document.getElementById('mainNav');
+        const navOverlay = document.getElementById('navOverlay');
+
+        let calendar = null;
+        let currentEventId = null;
+        let currentTelefono = '';
+        let currentNota = '';
+
+        // ========== GESTIÓN DEL LOGO (localStorage) ==========
+        let logoSrc = localStorage.getItem('logoSrc') || 'download.jpg';
+        function actualizarLogoEnPagina(src) {
+            if (headerLogo) headerLogo.src = src;
+            if (heroLogo) heroLogo.src = src;
+            if (logoPreview) logoPreview.src = src;
+            if (logoUploadPreview) logoUploadPreview.src = src;
+        }
+        actualizarLogoEnPagina(logoSrc);
+
+        function guardarLogoLocal(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const dataURL = event.target.result;
+                    localStorage.setItem('logoSrc', dataURL);
+                    actualizarLogoEnPagina(dataURL);
+                    resolve(dataURL);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        guardarLogoBtn.addEventListener('click', async () => {
+            const file = logoUpload.files[0];
+            if (!file) {
+                alert('Selecciona una imagen primero');
+                return;
+            }
+            guardarLogoBtn.disabled = true;
+            guardarLogoBtn.innerHTML = '<span class="spinner"></span> Guardando...';
+            try {
+                await guardarLogoLocal(file);
+                alert('✅ Logo actualizado correctamente');
+                logoUploadPreview.src = localStorage.getItem('logoSrc');
+            } catch (error) {
+                console.error('Error guardando logo:', error);
+                alert('Error al guardar el logo');
+            } finally {
+                guardarLogoBtn.disabled = false;
+                guardarLogoBtn.innerHTML = 'Guardar logo';
+            }
+        });
+
+        logoUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    logoUploadPreview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // ========== RESTO DEL CÓDIGO (sin cambios) ==========
+        function cargarServicios() {
+            servicioSelect.innerHTML = '<option value="">Selecciona un servicio</option>';
+            adminServicioSelect.innerHTML = '<option value="">Selecciona un servicio</option>';
+            servicios.forEach(s => {
+                servicioSelect.innerHTML += `<option value="${s.nombre}" data-duracion="${s.duracion}" data-monto="${s.montoSenia}" data-link="${s.linkPago}" data-id="${s.id}">${s.nombre}</option>`;
+                adminServicioSelect.innerHTML += `<option value="${s.nombre}">${s.nombre}</option>`;
+            });
+
+            servicioSelect.addEventListener('change', function() {
+                const selected = this.options[this.selectedIndex];
+                const duracion = selected.getAttribute('data-duracion');
+                const monto = selected.getAttribute('data-monto');
+                const link = selected.getAttribute('data-link');
+                const servicioId = parseInt(selected.getAttribute('data-id'));
+                
+                if (duracion) {
+                    const horas = Math.floor(duracion / 60);
+                    const minutos = duracion % 60;
+                    duracionEstimada.textContent = `⏱️ Duración estimada: ${horas}h ${minutos.toString().padStart(2,'0')}min`;
+                } else {
+                    duracionEstimada.textContent = '';
+                }
+
+                const esDisenoMechas = (servicioId === 3);
+                
+                if (esDisenoMechas) {
+                    mensajeWhatsAppDiv.style.display = 'block';
+                    montoSeniaInfo.textContent = '';
+                    pagarMercadoPago.style.display = 'none';
+                    if (confirmarPagoBtn) confirmarPagoBtn.style.display = 'none';
+                    document.querySelector('#fecha').parentElement.style.display = 'none';
+                    document.querySelector('#hora').parentElement.style.display = 'none';
+                } else {
+                    mensajeWhatsAppDiv.style.display = 'none';
+                    document.querySelector('#fecha').parentElement.style.display = 'block';
+                    document.querySelector('#hora').parentElement.style.display = 'block';
+                    if (confirmarPagoBtn) confirmarPagoBtn.style.display = 'block';
+                    
+                    if (monto) {
+                        montoSeniaInfo.textContent = `💰 Seña requerida: $${parseInt(monto).toLocaleString('es-AR')}`;
+                        pagarMercadoPago.style.display = 'flex';
+                        pagarMercadoPago.setAttribute('data-link-pago', link);
+                        pagarMercadoPago.setAttribute('data-monto', monto);
+                    } else {
+                        montoSeniaInfo.textContent = '';
+                        pagarMercadoPago.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        function renderizarServicios() {
+            const grid = document.getElementById('servicesGrid');
+            grid.innerHTML = servicios.map(s => {
+                const horas = Math.floor(s.duracion / 60);
+                const minutos = s.duracion % 60;
+                const duracionTexto = horas > 0 ? `${horas}:${minutos.toString().padStart(2,'0')} hs` : `${minutos} min`;
+                return `
+                    <div class="service-card">
+                        <i class="fas fa-cut service-icon"></i>
+                        <h3>${s.nombre}</h3>
+                        <div class="duracion">${duracionTexto}</div>
+                        <div class="senia">💰 Seña: $${s.montoSenia.toLocaleString('es-AR')}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        flatpickr(fechaInput, {
+            locale: 'es',
+            dateFormat: 'Y-m-d',
+            minDate: 'today',
+            maxDate: new Date().fp_incr(90)
+        });
+        flatpickr(adminFechaInput, {
+            locale: 'es',
+            dateFormat: 'Y-m-d',
+            minDate: 'today',
+            maxDate: new Date().fp_incr(90)
+        });
+
+        async function cargarHorarios() {
+            try {
+                const docRef = doc(db, 'config', 'horarios');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    horarios = docSnap.data();
+                    for (let dia in horarios) {
+                        if (horarios[dia].apertura) horarios[dia].apertura = horarios[dia].apertura.substring(0,5);
+                        if (horarios[dia].cierre) horarios[dia].cierre = horarios[dia].cierre.substring(0,5);
+                    }
+                } else {
+                    horarios = {
+                        lunes: { activo: true, apertura: '09:00', cierre: '19:00' },
+                        martes: { activo: true, apertura: '09:00', cierre: '19:00' },
+                        miércoles: { activo: true, apertura: '09:00', cierre: '19:00' },
+                        jueves: { activo: true, apertura: '09:00', cierre: '19:00' },
+                        viernes: { activo: true, apertura: '09:00', cierre: '19:00' },
+                        sábado: { activo: true, apertura: '09:00', cierre: '19:00' },
+                        domingo: { activo: true, apertura: '09:00', cierre: '19:00' }
+                    };
+                    await setDoc(docRef, horarios);
+                }
+            } catch (error) {
+                console.error("Error cargando horarios:", error);
+            }
+            renderizarHorarios();
+        }
+
+        async function guardarHorariosEnFirestore() {
+            try {
+                await setDoc(doc(db, 'config', 'horarios'), horarios);
+                alert('✅ Horarios guardados correctamente');
+            } catch (error) {
+                alert('❌ Error al guardar horarios');
+            }
+        }
+
+        function escucharTurnos() {
+            const q = query(collection(db, 'turnos'), orderBy('fecha', 'desc'));
+            onSnapshot(q, (snapshot) => {
+                turnos = [];
+                snapshot.forEach((doc) => {
+                    turnos.push({ id: doc.id, ...doc.data() });
+                });
+                actualizarPanel();
+                if (calendar) calendar.refetchEvents();
+            });
+        }
+
+        function esDiaLaborable(fecha) {
+            const dias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+            const dia = dias[new Date(fecha).getDay()];
+            return horarios[dia] && horarios[dia].activo;
+        }
+
+        function horaToMinutos(horaStr) {
+            const [h,m] = horaStr.split(':').map(Number);
+            return h*60 + m;
+        }
+
+        function horarioDentroDeAtencion(fecha, hora, duracion) {
+            const dias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+            const dia = dias[new Date(fecha).getDay()];
+            const config = horarios[dia];
+            if (!config || !config.activo) return false;
+            const inicio = horaToMinutos(hora);
+            const fin = inicio + duracion;
+            const apertura = horaToMinutos(config.apertura);
+            const cierre = horaToMinutos(config.cierre);
+            return inicio >= apertura && fin <= cierre;
+        }
+
+        function turnoNoSolapado(fecha, hora, duracion, idExcluir = null) {
+            const inicio = new Date(`${fecha}T${hora}`);
+            const fin = new Date(inicio.getTime() + duracion*60000);
+            return !turnos.some(t => {
+                if (t.id === idExcluir) return false;
+                if (t.estado === 'cancelado') return false;
+                const tInicio = new Date(`${t.fecha}T${t.hora}`);
+                const tDuracion = servicios.find(s => s.nombre === t.servicio)?.duracion || 60;
+                const tFin = new Date(tInicio.getTime() + tDuracion*60000);
+                return (inicio < tFin && fin > tInicio);
+            });
+        }
+
+        function iniciarPago() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const servicio = document.getElementById('servicio').value;
+            const fecha = document.getElementById('fecha').value;
+            const hora = document.getElementById('hora').value;
+            const nota = notaInput.value.trim();
+            const selectedOption = document.getElementById('servicio').selectedOptions[0];
+            const duracion = parseInt(selectedOption?.getAttribute('data-duracion') || '60');
+            const linkPago = selectedOption?.getAttribute('data-link');
+
+            if (!nombre || !telefono || !servicio || !fecha || !hora) {
+                alert('Completa todos los campos');
+                return;
+            }
+            if (!esDiaLaborable(fecha)) {
+                alert('❌ El día no es laborable.');
+                return;
+            }
+            if (!horarioDentroDeAtencion(fecha, hora, duracion)) {
+                alert('❌ Horario no válido.');
+                return;
+            }
+            if (!turnoNoSolapado(fecha, hora, duracion)) {
+                alert('❌ Ya hay un turno en ese horario.');
+                return;
+            }
+
+            const datosReserva = {
+                nombre, telefono, servicio, fecha, hora, nota,
+                timestamp: Date.now()
+            };
+            sessionStorage.setItem('reservaPendiente', JSON.stringify(datosReserva));
+
+            if (linkPago) {
+                window.open(linkPago, '_blank');
+                alert('Se abrirá Mercado Pago. Después de pagar, vuelve y confirma.');
+                reservaModal.style.display = 'none';
+            } else {
+                alert('Error: link de pago no configurado');
+            }
+        }
+
+        pagarMercadoPago.addEventListener('click', iniciarPago);
+
+        function recuperarReservaPendiente() {
+            const data = sessionStorage.getItem('reservaPendiente');
+            if (data) {
+                const obj = JSON.parse(data);
+                if (Date.now() - obj.timestamp < 3600000) return obj;
+                sessionStorage.removeItem('reservaPendiente');
+            }
+            return null;
+        }
+
+        function agregarBotonConfirmarPago() {
+            const form = document.getElementById('reservaForm');
+            if (document.getElementById('confirmarPagoBtn')) return;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.id = 'confirmarPagoBtn';
+            btn.className = 'btn btn-success btn-block';
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Ya pagué, confirmar reserva';
+            btn.style.marginTop = '10px';
+            btn.addEventListener('click', async () => {
+                const pendiente = recuperarReservaPendiente();
+                if (!pendiente) {
+                    alert('No hay reserva pendiente. Inicia el pago primero.');
+                    return;
+                }
+                const nuevoTurno = {
+                    nombre: pendiente.nombre,
+                    telefono: pendiente.telefono,
+                    servicio: pendiente.servicio,
+                    fecha: pendiente.fecha,
+                    hora: pendiente.hora,
+                    nota: pendiente.nota || '',
+                    estado: 'pagado',
+                    pagado: true,
+                    createdAt: new Date().toISOString()
+                };
+                try {
+                    await addDoc(collection(db, 'turnos'), nuevoTurno);
+                    sessionStorage.removeItem('reservaPendiente');
+                    reservaModal.style.display = 'none';
+                    reservaForm.reset();
+                    duracionEstimada.textContent = '';
+                    montoSeniaInfo.textContent = '';
+                    alert('✅ Turno confirmado. ¡Gracias por tu pago!');
+                } catch (error) {
+                    alert('Error al guardar el turno');
+                }
+            });
+            form.appendChild(btn);
+            confirmarPagoBtn = btn;
+        }
+        agregarBotonConfirmarPago();
+
+        if (btnWhatsAppAsesoramiento) {
+            btnWhatsAppAsesoramiento.addEventListener('click', () => {
+                const mensaje = encodeURIComponent('quiero mi diagnóstico para diseño de mecha');
+                window.open(`https://wa.me/5492614859340?text=${mensaje}`, '_blank');
+            });
+        }
+
+        async function guardarReserva(e) {
+            e.preventDefault();
+            const servicioId = parseInt(document.getElementById('servicio').selectedOptions[0]?.getAttribute('data-id'));
+            if (servicioId === 3) {
+                alert('Para diseño de mechas, primero contacta por WhatsApp.');
+                return;
+            }
+            alert('Este servicio requiere seña. Usá el botón de Mercado Pago.');
+        }
+        reservaForm.addEventListener('submit', guardarReserva);
+
+        function actualizarPanel() {
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('hoyCount').textContent = turnos.filter(t => t.fecha === hoy).length;
+
+            const hoyDate = new Date();
+            const diaSemana = hoyDate.getDay();
+            const inicioSemana = new Date(hoyDate);
+            inicioSemana.setDate(hoyDate.getDate() - (diaSemana === 0 ? 6 : diaSemana - 1));
+            const finSemana = new Date(inicioSemana);
+            finSemana.setDate(inicioSemana.getDate() + 6);
+            document.getElementById('semanaCount').textContent = turnos.filter(t => {
+                const tDate = new Date(t.fecha);
+                return tDate >= inicioSemana && tDate <= finSemana;
+            }).length;
+
+            document.getElementById('completadosCount').textContent = turnos.filter(t => t.estado === 'completado').length;
+            document.getElementById('canceladosCount').textContent = turnos.filter(t => t.estado === 'cancelado').length;
+            document.getElementById('pagadosCount').textContent = turnos.filter(t => t.estado === 'pagado').length;
+
+            if (turnos.length === 0) {
+                turnosContainer.innerHTML = '<p style="text-align:center; color:#aaa;">No hay turnos reservados</p>';
+            } else {
+                const turnosOrdenados = [...turnos].sort((a, b) => new Date(b.fecha + 'T' + b.hora) - new Date(a.fecha + 'T' + a.hora));
+                let html = '';
+                turnosOrdenados.forEach(t => {
+                    let estadoClass = 'estado-pendiente';
+                    if (t.estado === 'completado') estadoClass = 'estado-completado';
+                    if (t.estado === 'cancelado') estadoClass = 'estado-cancelado';
+                    if (t.estado === 'pagado') estadoClass = 'estado-pagado';
+
+                    html += `
+                        <div class="turno-item" data-id="${t.id}">
+                            <div class="turno-info">
+                                <span><strong>${t.nombre}</strong></span>
+                                <span>${t.servicio}</span>
+                                <span>${t.fecha} ${t.hora}</span>
+                                <span class="turno-estado ${estadoClass}">${t.estado}</span>
+                                ${t.nota ? `<span class="nota-icon" title="${escapeHtml(t.nota)}"><i class="fas fa-pencil-alt"></i></span>` : ''}
+                            </div>
+                            <div class="turno-acciones">
+                                <button class="completar-btn" data-id="${t.id}">✔ Completar</button>
+                                <button class="cancelar-btn" data-id="${t.id}">✖ Cancelar</button>
+                                <button class="eliminar-btn" data-id="${t.id}">🗑 Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                turnosContainer.innerHTML = html;
+
+                document.querySelectorAll('.completar-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.dataset.id;
+                        updateDoc(doc(db, 'turnos', id), { estado: 'completado' });
+                    });
+                });
+                document.querySelectorAll('.cancelar-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.dataset.id;
+                        updateDoc(doc(db, 'turnos', id), { estado: 'cancelado' });
+                    });
+                });
+                document.querySelectorAll('.eliminar-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        if (confirm('¿Estás segura de eliminar este turno permanentemente?')) {
+                            const id = e.target.dataset.id;
+                            deleteDoc(doc(db, 'turnos', id));
+                        }
+                    });
+                });
+            }
+        }
+
+        function renderizarHorarios() {
+            const dias = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+            let html = '';
+            dias.forEach(dia => {
+                const h = horarios[dia] || { activo: true, apertura: '09:00', cierre: '19:00' };
+                html += `
+                    <div class="day-card" data-dia="${dia}">
+                        <div class="day-header">
+                            <h4>${dia.charAt(0).toUpperCase() + dia.slice(1)}</h4>
+                            <div class="day-checkbox">
+                                <input type="checkbox" class="dia-activo" ${h.activo ? 'checked' : ''} data-dia="${dia}">
+                                <label>Día laborable</label>
+                            </div>
+                        </div>
+                        <div class="horario-continuo">
+                            <div class="form-group">
+                                <label>Apertura</label>
+                                <input type="time" class="form-control apertura" value="${h.apertura}" data-dia="${dia}" ${!h.activo ? 'disabled' : ''}>
+                            </div>
+                            <div class="form-group">
+                                <label>Cierre</label>
+                                <input type="time" class="form-control cierre" value="${h.cierre}" data-dia="${dia}" ${!h.activo ? 'disabled' : ''}>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            horariosContainer.innerHTML = html;
+
+            document.querySelectorAll('.dia-activo').forEach(chk => {
+                chk.addEventListener('change', function() {
+                    const dia = this.dataset.dia;
+                    const apertura = document.querySelector(`.apertura[data-dia="${dia}"]`);
+                    const cierre = document.querySelector(`.cierre[data-dia="${dia}"]`);
+                    apertura.disabled = !this.checked;
+                    cierre.disabled = !this.checked;
+                });
+            });
+        }
+
+        guardarHorariosBtn?.addEventListener('click', () => {
+            const dias = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+            dias.forEach(dia => {
+                const diaActivo = document.querySelector(`.dia-activo[data-dia="${dia}"]`)?.checked || false;
+                const apertura = document.querySelector(`.apertura[data-dia="${dia}"]`)?.value || '09:00';
+                const cierre = document.querySelector(`.cierre[data-dia="${dia}"]`)?.value || '19:00';
+                horarios[dia] = { activo: diaActivo, apertura, cierre };
+            });
+            guardarHorariosEnFirestore();
+        });
+
+        function initCalendar() {
+            if (calendar) calendar.destroy();
+            const calendarEl = document.getElementById('calendar');
+            if (!calendarEl) return;
+
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'es',
+                initialView: window.innerWidth < 768 ? 'timeGridDay' : 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: window.innerWidth < 768 ? 'dayGridMonth,timeGridDay' : 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                editable: true,
+                eventDurationEditable: true,
+                selectable: true,
+                select: function(info) {
+                    if (!isAdmin) return;
+                    let fecha = info.startStr.split('T')[0];
+                    let hora = info.startStr.includes('T') ? info.startStr.split('T')[1].substring(0,5) : '09:00';
+                    adminFechaInput.value = fecha;
+                    adminHoraInput.value = hora;
+                    adminReservaModal.style.display = 'flex';
+                },
+                eventDrop: function(info) {
+                    if (!isAdmin) {
+                        info.revert();
+                        alert('Solo la administradora puede mover turnos');
+                        return;
+                    }
+                    const event = info.event;
+                    const id = event.id;
+                    const nuevaFecha = event.start.toISOString().split('T')[0];
+                    const nuevaHora = event.start.toTimeString().split(' ')[0].substring(0,5);
+                    updateDoc(doc(db, 'turnos', id), { fecha: nuevaFecha, hora: nuevaHora });
+                },
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    const eventos = turnos.map(t => {
+                        let className = 'fc-event-pendiente';
+                        if (t.estado === 'completado') className = 'fc-event-completado';
+                        if (t.estado === 'cancelado') className = 'fc-event-cancelado';
+                        if (t.estado === 'pagado') className = 'fc-event-pagado';
+                        const startStr = t.fecha + 'T' + t.hora + ':00';
+                        const duracion = servicios.find(s => s.nombre === t.servicio)?.duracion || 60;
+                        const end = new Date(new Date(startStr).getTime() + duracion * 60000);
+                        return {
+                            id: t.id,
+                            title: `${t.nombre} - ${t.servicio}${t.estado === 'pagado' ? ' 💰' : ''}`,
+                            start: startStr,
+                            end: end.toISOString(),
+                            className: className,
+                            extendedProps: {
+                                nombre: t.nombre,
+                                telefono: t.telefono || '',
+                                servicio: t.servicio,
+                                estado: t.estado,
+                                fecha: t.fecha,
+                                hora: t.hora,
+                                nota: t.nota || ''
+                            }
+                        };
+                    });
+                    successCallback(eventos);
+                },
+                eventClick: function(info) {
+                    currentEventId = info.event.id;
+                    currentTelefono = info.event.extendedProps.telefono;
+                    currentNota = info.event.extendedProps.nota || '';
+                    const props = info.event.extendedProps;
+                    clientInfoContent.innerHTML = `
+                        <p><strong>Cliente:</strong> ${escapeHtml(props.nombre)}</p>
+                        <p><strong>Teléfono:</strong> ${escapeHtml(props.telefono || 'No registrado')}</p>
+                        <p><strong>Servicio:</strong> ${escapeHtml(props.servicio)}</p>
+                        <p><strong>Fecha:</strong> ${escapeHtml(props.fecha)}</p>
+                        <p><strong>Hora:</strong> ${escapeHtml(props.hora)}</p>
+                        <p><strong>Estado:</strong> ${escapeHtml(props.estado)}</p>
+                        ${props.estado === 'pagado' ? '<p><strong>💸 PAGADO</strong></p>' : ''}
+                    `;
+                    editarNota.value = currentNota;
+                    clientInfoModal.style.display = 'flex';
+                }
+            });
+            calendar.render();
+        }
+
+        function refreshCalendarEvents() {
+            if (calendar) calendar.refetchEvents();
+        }
+
+        function toggleMenu() {
+            mainNav.classList.toggle('active');
+            navOverlay.classList.toggle('active');
+            menuToggle.innerHTML = mainNav.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+            document.body.style.overflow = mainNav.classList.contains('active') ? 'hidden' : '';
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        navOverlay.addEventListener('click', toggleMenu);
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (mainNav.classList.contains('active')) toggleMenu();
+            });
+        });
+
+        adminLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginModal.style.display = 'flex';
+        });
+
+        cerrarLoginModal.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (passwordInput.value.trim() === ADMIN_PASSWORD) {
+                isAdmin = true;
+                loginModal.style.display = 'none';
+                adminPanel.style.display = 'block';
+                document.querySelector('header').style.display = 'none';
+                document.querySelector('.hero').style.display = 'none';
+                document.querySelector('.services').style.display = 'none';
+                document.querySelector('footer').style.display = 'none';
+                actualizarPanel();
+                renderizarHorarios();
+                if (!calendar) initCalendar();
+                else refreshCalendarEvents();
+            } else {
+                alert('Contraseña incorrecta');
+            }
+            passwordInput.value = '';
+        });
+
+        document.getElementById('cerrarAdmin').addEventListener('click', () => {
+            isAdmin = false;
+            adminPanel.style.display = 'none';
+            document.querySelector('header').style.display = 'block';
+            document.querySelector('.hero').style.display = 'block';
+            document.querySelector('.services').style.display = 'block';
+            document.querySelector('footer').style.display = 'block';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal) loginModal.style.display = 'none';
+            if (e.target === reservaModal) reservaModal.style.display = 'none';
+            if (e.target === clientInfoModal) clientInfoModal.style.display = 'none';
+            if (e.target === adminReservaModal) adminReservaModal.style.display = 'none';
+        });
+
+        abrirModalReserva.addEventListener('click', () => {
+            reservaModal.style.display = 'flex';
+            document.querySelector('#fecha').parentElement.style.display = 'block';
+            document.querySelector('#hora').parentElement.style.display = 'block';
+            mensajeWhatsAppDiv.style.display = 'none';
+            pagarMercadoPago.style.display = 'none';
+            servicioSelect.dispatchEvent(new Event('change'));
+            const pendiente = recuperarReservaPendiente();
+            if (pendiente && confirm('¿Tienes una reserva pendiente? ¿Quieres completarla?')) {
+                alert('Completa el pago y luego confirma.');
+            }
+        });
+
+        cerrarModalReserva.addEventListener('click', () => {
+            reservaModal.style.display = 'none';
+        });
+
+        agregarTurnoAdminBtn.addEventListener('click', () => {
+            adminReservaForm.reset();
+            const hoy = new Date().toISOString().split('T')[0];
+            adminFechaInput.value = hoy;
+            adminReservaModal.style.display = 'flex';
+        });
+
+        cerrarAdminReservaModal.addEventListener('click', () => {
+            adminReservaModal.style.display = 'none';
+        });
+
+        adminReservaForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = btnGuardarAdminReserva;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner"></span> Guardando...';
+            btn.disabled = true;
+
+            const nombre = document.getElementById('adminNombre').value.trim();
+            const telefono = document.getElementById('adminTelefono').value.trim();
+            const servicio = document.getElementById('adminServicio').value;
+            const fecha = document.getElementById('adminFecha').value;
+            const hora = document.getElementById('adminHora').value;
+            const nota = adminNotaInput.value.trim();
+
+            if (!nombre || !telefono || !servicio || !fecha || !hora) {
+                alert('Por favor completa todos los campos');
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                return;
+            }
+
+            const nuevoTurno = {
+                nombre,
+                telefono,
+                servicio,
+                fecha,
+                hora,
+                nota: nota || '',
+                estado: 'pendiente',
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await addDoc(collection(db, 'turnos'), nuevoTurno);
+                adminReservaModal.style.display = 'none';
+                adminReservaForm.reset();
+                alert('✅ Turno agregado por administradora (sin restricciones)');
+            } catch (error) {
+                console.error("Error agregando turno:", error);
+                alert('Error al guardar el turno');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        });
+
+        cerrarInfoModal.addEventListener('click', () => {
+            clientInfoModal.style.display = 'none';
+        });
+
+        completarTurnoInfo.addEventListener('click', () => {
+            if (currentEventId) {
+                updateDoc(doc(db, 'turnos', currentEventId), { estado: 'completado' });
+                clientInfoModal.style.display = 'none';
+            }
+        });
+
+        cancelarTurnoInfo.addEventListener('click', () => {
+            if (currentEventId) {
+                updateDoc(doc(db, 'turnos', currentEventId), { estado: 'cancelado' });
+                clientInfoModal.style.display = 'none';
+            }
+        });
+
+        eliminarTurnoInfo.addEventListener('click', () => {
+            if (currentEventId && confirm('¿Estás segura de eliminar este turno permanentemente?')) {
+                deleteDoc(doc(db, 'turnos', currentEventId));
+                clientInfoModal.style.display = 'none';
+            }
+        });
+
+        whatsappBtn.addEventListener('click', () => {
+            if (currentTelefono) {
+                let numero = currentTelefono.replace(/\D/g, '');
+                if (numero) {
+                    window.open(`https://wa.me/${numero}`, '_blank');
+                } else {
+                    alert('Número de teléfono no válido');
+                }
+            } else {
+                alert('No hay número de teléfono registrado para este cliente');
+            }
+        });
+
+        guardarNotaBtn.addEventListener('click', async () => {
+            if (currentEventId) {
+                const nuevaNota = editarNota.value.trim();
+                await updateDoc(doc(db, 'turnos', currentEventId), { nota: nuevaNota });
+                alert('Nota guardada');
+                currentNota = nuevaNota;
+                actualizarPanel();
+                if (calendar) calendar.refetchEvents();
+            }
+        });
+
+        async function init() {
+            cargarServicios();
+            renderizarServicios();
+            await cargarHorarios();
+            escucharTurnos();
+        }
+
+        init();
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m] || m));
+        }
+    </script>
+</body>
+</html>
