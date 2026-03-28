@@ -25,7 +25,7 @@
         }
     </script>
     <style>
-        /* ========== ESTILOS COMPLETOS (sin cambios) ========== */
+        /* ========== ESTILOS PRINCIPALES (sin cambios) ========== */
         :root {
             --primary-black: #0d0d0d;
             --secondary-black: #1a1a1a;
@@ -184,7 +184,6 @@
             border-radius: 30px;
             padding: 10px;
             background: rgba(255,59,155,0.1);
-            object-fit: contain;
         }
         
         .hero p {
@@ -811,7 +810,7 @@
     <header>
         <div class="container header-content">
             <div class="logo">
-                <img id="headerLogo" class="logo-img site-logo" src="download.jpg" alt="Logo Flor Cresto" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <img src="download.jpg" alt="FLOR CRESTO BY NUBIA" class="logo-img site-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <span>FLOR CRESTO BY NUBIA</span>
             </div>
             <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
@@ -831,7 +830,7 @@
     <!-- HERO -->
     <section id="inicio" class="hero">
         <div class="container hero-content">
-            <img id="heroLogo" class="hero-logo site-logo" src="download.jpg" alt="Logo Flor Cresto" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <img src="download.jpg" alt="FLOR CRESTO BY NUBIA" class="hero-logo site-logo">
             <p>🌸 transformamos tu cabello con arte, cuidado y resultado que enamoran 🌸</p>
             
             <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 2rem;">
@@ -904,7 +903,7 @@
                     <div id="montoSeniaInfo" style="margin-top: 0.5rem; font-weight: bold; color: var(--mp-blue);"></div>
                 </div>
 
-                <!-- Campo nota -->
+                <!-- NUEVO CAMPO: NOTA DEL CLIENTE -->
                 <div class="form-group">
                     <label for="nota"><i class="fas fa-pencil-alt"></i> Nota (opcional)</label>
                     <textarea class="form-control" id="nota" rows="2" placeholder="Ej: Prefiero color rojo, tengo alergia, dejar mensaje..."></textarea>
@@ -963,6 +962,7 @@
                         <option value="">Selecciona un servicio</option>
                     </select>
                 </div>
+                <!-- NUEVO CAMPO: NOTA DEL CLIENTE (admin) -->
                 <div class="form-group">
                     <label for="adminNota"><i class="fas fa-pencil-alt"></i> Nota (opcional)</label>
                     <textarea class="form-control" id="adminNota" rows="2" placeholder="Observaciones, preferencias, etc."></textarea>
@@ -988,6 +988,7 @@
             <span class="close-modal" id="cerrarInfoModal">&times;</span>
             <h3 class="modal-title">📋 Detalles del turno</h3>
             <div id="clientInfoContent"></div>
+            <!-- Área de nota editable -->
             <div id="notaEditableArea" style="margin-top: 1.5rem; border-top: 1px solid var(--medium-gray); padding-top: 1rem;">
                 <label for="editarNota"><strong>📝 Nota del cliente:</strong></label>
                 <textarea id="editarNota" class="form-control" rows="2" placeholder="Sin nota..."></textarea>
@@ -1007,7 +1008,7 @@
         <div class="container">
             <div class="admin-header">
                 <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                    <img id="logoPreview" src="download.jpg" alt="Logo" style="height: 50px; border: 2px solid var(--pink); border-radius: 10px; padding: 5px;">
+                    <img src="download.jpg" alt="FLOR CRESTO BY NUBIA" class="site-logo" style="height: 50px; border: 2px solid var(--pink); border-radius: 10px; padding: 5px;">
                     <h2 class="admin-title"><i class="fas fa-cog"></i> Panel de Administración</h2>
                 </div>
                 <div class="admin-actions">
@@ -1040,11 +1041,10 @@
             <div class="business-hours-section">
                 <h3><i class="fas fa-image"></i> Personalizar logo</h3>
                 <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-                    <img id="logoUploadPreview" src="download.jpg" alt="Vista previa" style="height: 80px; border: 2px solid var(--pink); border-radius: 10px; padding: 5px;">
+                    <img id="logoPreview" src="download.jpg" alt="Vista previa" style="height: 80px; border: 2px solid var(--pink); border-radius: 10px; padding: 5px;">
                     <div>
                         <input type="file" id="logoUpload" accept="image/*">
                         <p style="font-size: 0.9rem;">Selecciona una nueva imagen para el logo</p>
-                        <button id="guardarLogoBtn" class="btn btn-small" style="margin-top: 8px;">Guardar logo</button>
                     </div>
                 </div>
             </div>
@@ -1166,12 +1166,6 @@
         const adminNotaInput = document.getElementById('adminNota');
         const editarNota = document.getElementById('editarNota');
         const guardarNotaBtn = document.getElementById('guardarNotaBtn');
-        const logoUpload = document.getElementById('logoUpload');
-        const guardarLogoBtn = document.getElementById('guardarLogoBtn');
-        const logoUploadPreview = document.getElementById('logoUploadPreview');
-        const headerLogo = document.getElementById('headerLogo');
-        const heroLogo = document.getElementById('heroLogo');
-        const logoPreview = document.getElementById('logoPreview');
 
         const menuToggle = document.getElementById('menuToggle');
         const mainNav = document.getElementById('mainNav');
@@ -1182,63 +1176,27 @@
         let currentTelefono = '';
         let currentNota = '';
 
-        // ========== GESTIÓN DEL LOGO (localStorage) ==========
         let logoSrc = localStorage.getItem('logoSrc') || 'download.jpg';
         function actualizarLogoEnPagina(src) {
-            if (headerLogo) headerLogo.src = src;
-            if (heroLogo) heroLogo.src = src;
-            if (logoPreview) logoPreview.src = src;
-            if (logoUploadPreview) logoUploadPreview.src = src;
+            document.querySelectorAll('.site-logo').forEach(img => img.src = src);
+            const preview = document.getElementById('logoPreview');
+            if (preview) preview.src = src;
         }
         actualizarLogoEnPagina(logoSrc);
 
-        function guardarLogoLocal(file) {
-            return new Promise((resolve, reject) => {
+        document.getElementById('logoUpload')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const dataURL = event.target.result;
                     localStorage.setItem('logoSrc', dataURL);
                     actualizarLogoEnPagina(dataURL);
-                    resolve(dataURL);
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        guardarLogoBtn.addEventListener('click', async () => {
-            const file = logoUpload.files[0];
-            if (!file) {
-                alert('Selecciona una imagen primero');
-                return;
-            }
-            guardarLogoBtn.disabled = true;
-            guardarLogoBtn.innerHTML = '<span class="spinner"></span> Guardando...';
-            try {
-                await guardarLogoLocal(file);
-                alert('✅ Logo actualizado correctamente');
-                logoUploadPreview.src = localStorage.getItem('logoSrc');
-            } catch (error) {
-                console.error('Error guardando logo:', error);
-                alert('Error al guardar el logo');
-            } finally {
-                guardarLogoBtn.disabled = false;
-                guardarLogoBtn.innerHTML = 'Guardar logo';
-            }
-        });
-
-        logoUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    logoUploadPreview.src = event.target.result;
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // ========== RESTO DEL CÓDIGO (sin cambios) ==========
         function cargarServicios() {
             servicioSelect.innerHTML = '<option value="">Selecciona un servicio</option>';
             adminServicioSelect.innerHTML = '<option value="">Selecciona un servicio</option>';
@@ -1911,6 +1869,7 @@
                 await updateDoc(doc(db, 'turnos', currentEventId), { nota: nuevaNota });
                 alert('Nota guardada');
                 currentNota = nuevaNota;
+                // Refrescar lista y calendario
                 actualizarPanel();
                 if (calendar) calendar.refetchEvents();
             }
